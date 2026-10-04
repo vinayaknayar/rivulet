@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package kafkalite;
+
+option go_package = "rivulet/api/proto";
+
+service Broker {
+  rpc Produce(ProduceRequest) returns (ProduceResponse);
+  rpc Fetch(FetchRequest) returns (stream Record);
+  rpc Metadata(MetadataRequest) returns (MetadataResponse);
+  rpc CreateTopic(CreateTopicRequest) returns (CreateTopicResponse);
+}
+
+message ProduceRequest {
+  string topic = 1;
+  int32 partition = 2; // -1 => broker picks via partitioner
+  bytes key = 3;
+  bytes value = 4;
+}
+
+message ProduceResponse {
+  string topic = 1;
+  int32 partition = 2;
+  int64 offset = 3;
+}
+
+message FetchRequest {
+  string topic = 1;
+  int32 partition = 2;
+  int64 offset = 3;
+  int32 max_bytes = 4;
+  bool follow = 5; // keep streaming new records as they arrive
+}
+
+message Record {
+  int64 offset = 1;
+  int64 timestamp = 2;
+  bytes key = 3;
+  bytes value = 4;
+}
+
+message MetadataRequest {}
+
+message MetadataResponse {
+  repeated TopicMeta topics = 1;
+}
+
+message TopicMeta {
+  string name = 1;
+  int32 partitions = 2;
+}
+
+message CreateTopicRequest {
+  string name = 1;
+  int32 partitions = 2;
+}
+
+message CreateTopicResponse {}
