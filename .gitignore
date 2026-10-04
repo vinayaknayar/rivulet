@@ -1,0 +1,4 @@
+bin/
+data/
+data-demo/
+*.log
